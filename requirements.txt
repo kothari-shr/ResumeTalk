@@ -1,7 +1,0 @@
-langchain
-openai
-ipykernel
-python-dotenv
-langchain_community
-bs4
-arxiv
