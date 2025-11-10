@@ -1,8 +1,7 @@
 from typing import List
 from langchain_community.document_loaders import PyMuPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
-
+from langchain_text_splitters import RecursiveCharacterTextSplitter  # FIXED IMPORT
+from langchain_core.documents import Document  # FIXED IMPORT
 
 def load_and_split_resume(file_path: str) -> List[Document]:
     """

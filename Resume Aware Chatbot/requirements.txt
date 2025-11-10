@@ -1,5 +1,4 @@
 # Core LangChain - Latest versions
-langchain>=0.3.13
 langchain-community>=0.3.13
 langchain-openai>=0.2.14
 langchain-core>=0.3.28
