@@ -1,11 +1,15 @@
 import os
-from typing import List
+from pathlib import Path
+from typing import List, ClassVar
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
+    # Load .env located next to this config file to avoid depending on the process cwd
+    # Look for the repository-level .env in the project root (two levels up from this file)
+    env_path: ClassVar[Path] = Path(__file__).resolve().parents[2] / ".env"
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(env_path),
         case_sensitive=False,
         extra="ignore"
     )

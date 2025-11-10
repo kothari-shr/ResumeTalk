@@ -8,14 +8,13 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
 # Optional local embeddings
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 # CORRECT IMPORTS for LangChain 1.0+
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableBranch
 from langchain_core.messages import HumanMessage, AIMessage
-
 
 def _get_embeddings():
     use_local = os.getenv("USE_LOCAL_EMBEDDINGS", "false").lower() == "true"

@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: FastAPI (uvicorn) - Debug",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000",
+        "--log-level",
+        "info"
+      ],
+      "cwd": "${workspaceFolder}/Resume Aware Chatbot",
+      "envFile": "${workspaceFolder}/Resume Aware Chatbot/.env",
+      "env": {
+        "VIRTUAL_ENV": "${workspaceFolder}/my_venv.venv",
+        "PATH": "${workspaceFolder}/my_venv.venv/bin:${env:PATH}"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Python: Run main.py (debug)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/Resume Aware Chatbot/main.py",
+      "cwd": "${workspaceFolder}/Resume Aware Chatbot",
+      "envFile": "${workspaceFolder}/Resume Aware Chatbot/.env",
+      "env": {
+        "VIRTUAL_ENV": "${workspaceFolder}/my_venv.venv",
+        "PATH": "${workspaceFolder}/my_venv.venv/bin:${env:PATH}"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

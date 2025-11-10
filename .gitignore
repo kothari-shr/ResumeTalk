@@ -208,3 +208,5 @@ __marimo__/
 
 .vscode/*
 *.venv/
+*.faiss
+*.pkl
