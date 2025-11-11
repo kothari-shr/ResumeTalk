@@ -43,7 +43,11 @@ class RAGService:
         
         try:
             # Use invoke() method with latest LangChain
+            # the LCEL chain expects the user text under the key "input"
+            # (rag_chain.py references x["input"]). Provide both keys for
+            # backward compatibility but ensure "input" is present.
             result = await self.chain.ainvoke({
+                "input": question,
                 "question": question,
                 "chat_history": chat_history
             })
@@ -53,6 +57,7 @@ class RAGService:
             # Fallback to sync invoke if async not available
             try:
                 result = self.chain.invoke({
+                    "input": question,
                     "question": question,
                     "chat_history": chat_history
                 })
