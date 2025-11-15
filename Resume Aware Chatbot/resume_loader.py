@@ -17,14 +17,14 @@ def load_and_split_resume(file_path: str) -> List[Document]:
         text = " ".join(d.page_content.split())
         cleaned.append(Document(
             page_content=text,
-            metadata=d.metadata  # includes 'source' and 'page'
+            metadata=d.metadata
         ))
 
     # Resumes are short; smaller chunks with a bit of overlap work well
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=450,
         chunk_overlap=60,
-        separators=["\n\n", "\n", ".", " ", ""],
+        separators=["\n\n", "\n", ".", " ", "•", ""],
     )
     split_docs = splitter.split_documents(cleaned)
     return split_docs

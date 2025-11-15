@@ -60,20 +60,3 @@ async def chat_endpoint(request: ChatRequest):
         chat_memory.add_exchange(request.session_id, request.question, answer)
 
     return ChatResponse(response=answer)
-
-@router.get(
-    "/chat/models",
-    summary="Get available models",
-    description="List available LLM and embedding models"
-)
-async def get_available_models():
-    """Get information about available models"""
-    return {
-        "llm_models": ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"],
-        "embedding_models": ["text-embedding-3-small", "text-embedding-3-large"],
-        "current_config": {
-            "llm_model": settings.llm_model,
-            "embedding_model": settings.embeddings_model,
-            "use_local_embeddings": settings.use_local_embeddings
-        }
-    }

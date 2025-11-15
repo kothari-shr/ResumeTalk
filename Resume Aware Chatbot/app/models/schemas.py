@@ -16,7 +16,6 @@ class ChatRequest(BaseModel):
         examples=["What programming languages does this candidate know?"]
     )
     session_id: str = Field(
-        default="default", 
         min_length=1,
         max_length=100, 
         description="Session identifier",

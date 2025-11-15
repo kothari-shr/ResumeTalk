@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Tuple, Dict, List, Any
+from typing import Dict, List, Any
 from app.core.config import settings
 from resume_loader import load_and_split_resume
 from rag_chain import bootstrap_rag

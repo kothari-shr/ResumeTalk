@@ -10,7 +10,7 @@ class ResponseService:
         unknown_phrases = ["i don't know", "idk", "not found in", "cannot find"]
         return (
             any(phrase in lower for phrase in unknown_phrases) 
-            or len(answer.strip()) < 10
+            # or len(answer.strip()) < 1
         )
     
     @staticmethod

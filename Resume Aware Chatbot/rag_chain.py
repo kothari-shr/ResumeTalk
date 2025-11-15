@@ -85,12 +85,12 @@ def build_conv_rag_chain(retriever):
             """
 You are an AI assistant helping with technical interviews. 
 Given the following context from the candidate's resume and previous chat history, answer the interviewer's question in a way that:
-- Clearly states whether the candidate has experience with the mentioned technology.
-- References specific roles, projects, or achievements from the context (such as job titles, personal projects, or industry experience or company name).
-- Is concise but provides enough detail to impress an interviewer (aim for 2-5 sentences).
+- Clearly states whether the candidate has experience with the mentioned skill.
+- References specific roles, projects, or achievements from the context (such as job titles, personal projects, or industry experience or company name) if he has any. 
+Even if he does not have direct experience, mention related skills or experiences or how candidate could potentially apply their knowledge.
+- Is detailed with proper format which makes it easy and readable for the interviewer and provides enough detail to impress an interviewer. If required also provide the personal projects (and github link if present) or course work that are relevant.
 - If the answer is not present in the resume context, respond exactly: \"I don't know.\"
-Do not append page numbers or other citations.
-
+- Keep the conversation engaging which could lead interviwer to ask to connect with the candidate. The personal information should be retrived from the resume only. 
 Context from resume:
 {context}
 """,
