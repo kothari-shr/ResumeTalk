@@ -7,7 +7,6 @@ from rag_chain import bootstrap_rag
 class RAGService:
     def __init__(self):
         self.chain = None
-        self.vectorstore = None
         self._initialized = False
     
     async def initialize(self) -> None:
@@ -24,7 +23,7 @@ class RAGService:
                 raise RuntimeError("No text could be extracted from the resume PDF.")
             
             # Use the latest bootstrap_rag function
-            self.chain, self.vectorstore = bootstrap_rag(docs)
+            self.chain = bootstrap_rag(docs)
             self._initialized = True
             print(f"✅ RAG chain initialized with {len(docs)} documents")
             

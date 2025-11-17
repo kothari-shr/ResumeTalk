@@ -129,4 +129,4 @@ def bootstrap_rag(docs) -> Tuple:
     vs = build_or_load_vectorstore(docs, embeddings, index_path)
     retriever = get_retriever(vs)
     chain = build_conv_rag_chain(retriever)
-    return chain, vs
+    return chain
