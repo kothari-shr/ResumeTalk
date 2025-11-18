@@ -1,6 +1,6 @@
-# Resume Aware Chatbot - Streamlit Deployment
+# ChatMyResume Chatbot - Streamlit Deployment
 
-This guide shows how to deploy your Resume Aware Chatbot on Streamlit Cloud or Hugging Face Spaces.
+This guide shows how to deploy your ChatMyResume Chatbot on Streamlit Cloud or Hugging Face Spaces.
 
 ## 🚀 Quick Start (Local)
 
@@ -25,7 +25,7 @@ streamlit run streamlit_app.py
    - Sign in with GitHub
    - Click "New app"
    - Select your repository: `kothari-shr/langchain-llm-learning`
-   - Set main file path: `Resume Aware Chatbot/streamlit_app.py`
+   - Set main file path: `ChatMyResume/streamlit_app.py`
    - Click "Deploy"
 
 3. **Add Secrets** (Environment Variables)
@@ -34,7 +34,7 @@ streamlit run streamlit_app.py
    - Add your secrets in TOML format:
    ```toml
    OPENAI_API_KEY = "sk-..."
-   RESUME_PATH = "Resume Aware Chatbot/path/to/your/resume.pdf"
+   RESUME_PATH = "ChatMyResume/path/to/your/resume.pdf"
    LLM_MODEL = "gpt-4o-mini"
    ```
 
@@ -91,7 +91,7 @@ All settings are managed through environment variables or Streamlit secrets:
 ## 📁 File Structure for Deployment
 
 ```
-Resume Aware Chatbot/
+ChatMyResume/
 ├── streamlit_app.py          # Main Streamlit app
 ├── requirements-streamlit.txt # Streamlit dependencies
 ├── .streamlit/

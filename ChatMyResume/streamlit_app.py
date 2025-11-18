@@ -1,5 +1,5 @@
 """
-Streamlit interface for Resume Aware Chatbot
+Streamlit interface for ChatMyResume Chatbot
 Deploy this on Streamlit Cloud or Hugging Face Spaces
 """
 
@@ -101,7 +101,7 @@ def display_sources(sources):
 
 def main():
     # Header
-    st.title("💼 Resume Aware Chatbot")
+    st.title("💼  ChatMyResume Chatbot")
     st.markdown("Ask me anything about the resume!")
     
     # Sidebar
