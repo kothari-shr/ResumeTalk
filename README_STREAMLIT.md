@@ -1,6 +1,6 @@
-# ChatMyResume Chatbot - Streamlit Deployment
+# Resume Aware Chatbot - Streamlit Deployment
 
-This guide shows how to deploy your ChatMyResume Chatbot on Streamlit Cloud or Hugging Face Spaces.
+This guide shows how to deploy your Resume Aware Chatbot on Streamlit Cloud or Hugging Face Spaces.
 
 ## 🚀 Quick Start (Local)
 
@@ -25,7 +25,7 @@ streamlit run streamlit_app.py
    - Sign in with GitHub
    - Click "New app"
    - Select your repository: `kothari-shr/langchain-llm-learning`
-   - Set main file path: `ChatMyResume/streamlit_app.py`
+   - Set main file path: `streamlit_app.py`
    - Click "Deploy"
 
 3. **Add Secrets** (Environment Variables)
@@ -34,7 +34,7 @@ streamlit run streamlit_app.py
    - Add your secrets in TOML format:
    ```toml
    OPENAI_API_KEY = "sk-..."
-   RESUME_PATH = "ChatMyResume/path/to/your/resume.pdf"
+   RESUME_PATH = "resume.pdf"
    LLM_MODEL = "gpt-4o-mini"
    ```
 
@@ -51,8 +51,8 @@ streamlit run streamlit_app.py
    git clone https://huggingface.co/spaces/YOUR_USERNAME/resume-chatbot
    cd resume-chatbot
    
-   # Copy your files
-   cp -r /path/to/Resume\ Aware\ Chatbot/* .
+   # Copy your files from your repo
+   cp -r /path/to/langchain-llm-learning/* .
    
    # Create packages.txt if needed (for system dependencies)
    echo "poppler-utils" > packages.txt
@@ -68,7 +68,7 @@ streamlit run streamlit_app.py
      - `OPENAI_API_KEY`: Your OpenAI API key
      - `RESUME_PATH`: Path to your resume in the repo
 
-4. **Note**: For Hugging Face, rename `requirements-streamlit.txt` to `requirements.txt`
+4. **Note**: The existing `requirements.txt` already contains all necessary dependencies
 
 ## 📋 Pre-Deployment Checklist
 
@@ -91,15 +91,21 @@ All settings are managed through environment variables or Streamlit secrets:
 ## 📁 File Structure for Deployment
 
 ```
-ChatMyResume/
+ResumeTalk/
 ├── streamlit_app.py          # Main Streamlit app
-├── requirements-streamlit.txt # Streamlit dependencies
+├── requirements.txt          # Dependencies (rename from requirements-streamlit.txt for deployment)
 ├── .streamlit/
 │   └── config.toml           # Streamlit config
 ├── app/                      # Your existing app code
+│   ├── api/
+│   ├── core/
+│   ├── models/
+│   └── services/
 ├── resume_loader.py
 ├── rag_chain.py
-└── your_resume.pdf           # Your resume
+├── email_sender.py
+├── main.py
+└── resume.pdf                # Your resume
 ```
 
 ## 🎨 Features
@@ -123,9 +129,9 @@ ChatMyResume/
 - Look for initialization errors in logs
 
 ### Import errors
-- Make sure all dependencies are in `requirements-streamlit.txt`
+- Make sure all dependencies are in `requirements.txt`
 - For Streamlit Cloud, dependencies install automatically
-- For Hugging Face, rename to `requirements.txt`
+- Verify streamlit is included in `requirements.txt`
 
 ## 💡 Tips
 
