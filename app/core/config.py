@@ -43,6 +43,8 @@ class Settings(BaseSettings):
     
     # Memory Settings
     max_history_per_session: int = Field(default=50, ge=1, description="Max chat history per session")
+    session_timeout_minutes: int = Field(default=30, ge=5, le=1440, description="Session inactivity timeout in minutes")
+    cleanup_interval_seconds: int = Field(default=60, ge=5, le=3600, description="Background cleanup interval in seconds")
     
     # Email Settings (optional)
     email_address: str = Field(default="", description="Email for notifications")

@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 from typing import List
 import asyncio
+import uuid
 
 # Set page config
 st.set_page_config(
@@ -49,9 +50,16 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "session_id" not in st.session_state:
-    st.session_state.session_id = "streamlit_session"
+    # Generate unique session ID for this user/browser tab
+    st.session_state.session_id = f"session_{uuid.uuid4().hex[:12]}"
 if "initialized" not in st.session_state:
     st.session_state.initialized = False
+
+# Register session activity (heartbeat) - this keeps the session alive
+# This runs on every page interaction/rerun
+if "session_id" in st.session_state:
+    # Touch the session to update its last activity time
+    _ = chat_memory.get_history(st.session_state.session_id)
 
 async def initialize_rag():
     """Initialize RAG service"""
@@ -108,11 +116,20 @@ def main():
     with st.sidebar:
         st.header("⚙️ Settings")
         st.info(f"**Model:** {settings.llm_model}")
-        st.info(f"**Session ID:** {st.session_state.session_id}")
+        
+        # Show session ID with copy button
+        st.markdown("**Session ID:**")
+        st.code(st.session_state.session_id, language=None)
+        st.caption("🔒 Your unique session - each browser tab gets its own ID")
         
         if st.button("🗑️ Clear Chat History"):
+            # Clear messages in UI
             st.session_state.messages = []
+            # Clear session from memory service
             chat_memory.clear_session(st.session_state.session_id)
+            # Generate new session ID
+            st.session_state.session_id = f"session_{uuid.uuid4().hex[:12]}"
+            st.success("Chat history cleared! New session started.")
             st.rerun()
         
         st.markdown("---")

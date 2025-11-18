@@ -59,3 +59,18 @@ async def list_sessions():
         ],
         "total_sessions": len(sessions)
     }
+
+@router.post(
+    "/sessions/cleanup",
+    summary="Cleanup inactive sessions",
+    description="Manually trigger cleanup of inactive sessions"
+)
+async def cleanup_sessions():
+    """Manually trigger cleanup of inactive sessions"""
+    removed_count = chat_memory._cleanup_inactive_sessions()
+    active_count = chat_memory.session_count()
+    return {
+        "removed_sessions": removed_count,
+        "active_sessions": active_count,
+        "message": f"Cleaned up {removed_count} inactive session(s). {active_count} active session(s) remaining."
+    }
