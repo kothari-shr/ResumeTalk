@@ -15,11 +15,11 @@
         "--log-level",
         "info"
       ],
-      "cwd": "${workspaceFolder}/Resume Aware Chatbot",
-      "envFile": "${workspaceFolder}/Resume Aware Chatbot/.env",
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env",
       "env": {
-        "VIRTUAL_ENV": "${workspaceFolder}/my_venv.venv",
-        "PATH": "${workspaceFolder}/my_venv.venv/bin:${env:PATH}"
+        "VIRTUAL_ENV": "${workspaceFolder}/.venv",
+        "PATH": "${workspaceFolder}/.venv/bin:${env:PATH}"
       },
       "console": "integratedTerminal",
       "justMyCode": true
@@ -28,15 +28,46 @@
       "name": "Python: Run main.py (debug)",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/Resume Aware Chatbot/main.py",
-      "cwd": "${workspaceFolder}/Resume Aware Chatbot",
-      "envFile": "${workspaceFolder}/Resume Aware Chatbot/.env",
+      "program": "${workspaceFolder}/main.py",
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env",
       "env": {
-        "VIRTUAL_ENV": "${workspaceFolder}/my_venv.venv",
-        "PATH": "${workspaceFolder}/my_venv.venv/bin:${env:PATH}"
+        "VIRTUAL_ENV": "${workspaceFolder}/.venv",
+        "PATH": "${workspaceFolder}/.venv/bin:${env:PATH}"
       },
       "console": "integratedTerminal",
       "justMyCode": true
+    },
+    {
+      "name": "Python: Streamlit (Launch)",
+      "type": "python",
+      "request": "launch",
+      "module": "streamlit",
+      "args": ["run", "streamlit_app.py", "--server.port=8501"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONUNBUFFERED": "1",
+        "VIRTUAL_ENV": "${workspaceFolder}/.venv",
+        "PATH": "${workspaceFolder}/.venv/bin:${env:PATH}"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Streamlit (Attach debugpy)",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "${workspaceFolder}"
+        }
+      ],
+      "justMyCode": false
     }
   ]
 }

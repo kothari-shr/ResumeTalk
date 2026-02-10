@@ -33,3 +33,4 @@ tiktoken>=0.8.0
 # Email (if using email notifications)
 python-multipart>=0.0.20
 
+debugpy>=1.6.7

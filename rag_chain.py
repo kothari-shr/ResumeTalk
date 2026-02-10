@@ -64,6 +64,37 @@ def format_docs(docs):
     return "\n\n---\n\n".join(parts)
 
 
+def _filter_documents_by_metadata(docs, filters: dict):
+    """Return docs that match all key/value pairs in filters by metadata.
+
+    If no filters provided, return docs unchanged. If filtering leaves no
+    documents, return the original list (avoid empty context to the LLM).
+    """
+    if not filters:
+        return docs
+
+    def matches(d):
+        meta = getattr(d, "metadata", {}) or {}
+        for k, v in filters.items():
+            # allow simple equality or substring match for convenience
+            if k not in meta:
+                return False
+            mv = str(meta.get(k, "")).lower()
+            if isinstance(v, str):
+                if v.lower() not in mv:
+                    return False
+            else:
+                if str(v).lower() != mv:
+                    return False
+        return True
+
+    filtered = [d for d in docs if matches(d)]
+    if not filtered:
+        # fallback to original if overly restrictive
+        return docs
+    return filtered
+
+
 def build_conv_rag_chain(retriever):
     """
     Build a Conversational RAG chain using pure LCEL (LangChain Expression Language).
@@ -107,7 +138,12 @@ Context from resume:
             )
         )
         | RunnablePassthrough.assign(
-            context=lambda x: format_docs(retriever.invoke(x["standalone_question"]))
+            context=lambda x: format_docs(
+                _filter_documents_by_metadata(
+                    retriever.invoke(x["standalone_question"]),
+                    x.get("filters", {}) or {}
+                )
+            )
         )
         | RunnablePassthrough.assign(
             answer=lambda x: (qa_prompt | llm | StrOutputParser()).invoke({

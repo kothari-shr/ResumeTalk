@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     
     # API Settings
     app_name: str = Field(default="Resume Chatbot API", description="Application name")
-    version: str = Field(default="1.1.0", description="API version")
+    version: str = Field(default="1.2.0", description="API version")
     host: str = Field(default="0.0.0.0", description="Host address")
     port: int = Field(default=8000, description="Port number")
     debug: bool = Field(default=True, description="Debug mode")

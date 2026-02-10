@@ -81,6 +81,7 @@ async def get_response(question: str):
         chat_history = chat_memory.get_langchain_format(st.session_state.session_id)
         
         # Query RAG
+        print(f"🧠 Querying RAG with question: {question}")
         result = await rag_service.query(question, chat_history)
         
         answer = result.get("answer", "I'm not sure about that.").strip()

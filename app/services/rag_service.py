@@ -7,6 +7,7 @@ from typing import Dict, List, Any
 from app.core.config import settings
 from resume_loader import load_and_split_resume
 from rag_chain import bootstrap_rag
+from app.core.intent_classifier import classify_intent
 
 class RAGService:
     def __init__(self):
@@ -106,6 +107,10 @@ class RAGService:
         if not self.is_ready():
             raise RuntimeError("RAG service not initialized")
         
+        # Classify intent to obtain optional retrieval filters (section-based)
+        intent = classify_intent(question)
+        filters = intent.get("normalized_filters", {}) if intent else {}
+        print(f"🧠 Classified intent: {intent.get('target_section', 'general')}, filters: {filters}")
         try:
             # Use invoke() method with latest LangChain.
             # Our chain currently reads the user text from "question", but
@@ -115,16 +120,18 @@ class RAGService:
                 "input": question,
                 "question": question,
                 "chat_history": chat_history,
+                "filters": filters,
             })
             return result
         except Exception as e:
-            print(f"RAG chain error: {e}")
+            print(f"RAG chain error: {e}. \nTrying without filters and with invoke.")
             # Fallback to sync invoke if async not available
             try:
                 result = self.chain.invoke({
                     "input": question,
                     "question": question,
                     "chat_history": chat_history,
+                    "filters": filters,
                 })
                 return result
             except Exception as sync_e:
