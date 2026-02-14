@@ -15,9 +15,6 @@ python-dotenv>=1.0.1
 pydantic>=2.10.5
 pydantic-settings>=2.7.1
 
-# API Framework - Latest
-fastapi>=0.115.6
-uvicorn[standard]>=0.34.0
 
 # PDF handling
 PyPDF2>=3.0.1
@@ -31,6 +28,5 @@ torch>=2.5.1
 tiktoken>=0.8.0
 
 # Email (if using email notifications)
-python-multipart>=0.0.20
 
 debugpy>=1.6.7

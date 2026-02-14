@@ -1,9 +1,8 @@
-# Resume Chatbot (LangChain + FastAPI + Streamlit)
+# Resume Chatbot (LangChain + Streamlit)
 
 Conversational Q&A over a resume using Retrieval-Augmented Generation (RAG).
 This repo provides:
 
-- FastAPI backend with chat + session APIs
 - LangChain pipeline with FAISS vector store
 - Conversational memory per session
 - Streamlit UI with an Index Rebuild button
@@ -32,16 +31,12 @@ pip install -r requirements.txt
 
 # Start Streamlit UI (preferred)
 python -m streamlit run streamlit_app.py
-
-# Or start the FastAPI server directly
-python main.py
 ```
 
-Tip: If `streamlit` command isn’t found, always use `python -m streamlit ...`.
+Tip: If `streamlit` command isn't found, always use `python -m streamlit ...`.
 
 ## 🏗️ Architecture
 
-- `app/core/app.py` – FastAPI app factory, CORS, routes
 - `app/services/rag_service.py` – Loads resume, builds vector store, exposes `query()` and `rebuild()`
 - `resume_loader.py` – Loads and splits the resume PDF into chunks
 - `rag_chain.py` – Builds the LangChain RAG pipeline (LLM + retriever + prompts)
@@ -56,21 +51,13 @@ Data flow:
 
 ```
 .
-├── main.py                      # Run FastAPI server
 ├── streamlit_app.py             # Run Streamlit UI
 ├── resume_loader.py
 ├── rag_chain.py
 ├── email_sender.py
 ├── app/
 │   ├── core/
-│   │   ├── app.py               # create_app()
 │   │   └── config.py            # pydantic settings
-│   ├── api/
-│   │   └── routes/
-│   │       ├── chat.py          # POST /api/v1/chat
-│   │       ├── sessions.py      # GET/DELETE session endpoints
-│   │       └── health.py        # GET /health
-│   ├── models/schemas.py        # Pydantic models
 │   └── services/
 │       ├── rag_service.py       # RAGService
 │       └── memory_service.py    # ChatMemoryService
@@ -106,64 +93,9 @@ SESSION_TIMEOUT_MINUTES=30  # Auto-cleanup inactive sessions after 30 minutes
 CLEANUP_INTERVAL_SECONDS=180  # Run cleanup every 180 seconds
 ```
 
-Additional configurable settings live in `app/core/config.py` (with safe defaults): host/port, CORS, memory limits, etc.
+Additional configurable settings live in `app/core/config.py` (with safe defaults): memory limits, retrieval tuning, etc.
 
 Security note: rotate any leaked keys and keep `.env` in `.gitignore`.
-
-## 🧑‍💻 Running
-
-Streamlit UI:
-
-```bash
-python -m streamlit run streamlit_app.py
-```
-
-FastAPI server:
-
-```bash
-python main.py
-# or
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
-By default, the API listens on `http://localhost:8000`.
-
-## API Endpoints
-
-- `GET /health`
-	- Returns service status and version.
-
-- `POST /api/v1/chat`
-	- Body (JSON):
-		```json
-		{
-			"question": "What programming languages does this candidate know?",
-			"session_id": "user123"
-		}
-		```
-	- Response (JSON):
-		```json
-		{ "response": "... answer ..." }
-		```
-
-- `GET /api/v1/sessions/{session_id}/history`
-	- Returns an array of `{question, answer}` entries and a `count`.
-
-- `DELETE /api/v1/sessions/{session_id}`
-	- Clears the session’s chat history.
-
-- `GET /api/v1/sessions`
-	- Lists active sessions and message counts.
-
-Example curl:
-
-```bash
-curl -s http://localhost:8000/health | jq
-
-curl -s -X POST http://localhost:8000/api/v1/chat \
-	-H 'Content-Type: application/json' \
-	-d '{"question":"Summarize experience","session_id":"demo"}' | jq
-```
 
 ## 💻 Streamlit UI
 
@@ -212,15 +144,12 @@ Metadata:
 - OpenAI auth errors:
 	- Set `OPENAI_API_KEY` in `.env` or environment
 
-- Port already in use:
-	- Change port in `.env` (`PORT`) or run `uvicorn ... --port 8001`
-
 
 ## Deployments
 
 General guidance:
 - Include your resume PDF in the repo (or mount it)
-- Set secrets (API key, paths) in the hosting platform’s secrets UI
+- Set secrets (API key, paths) in the hosting platform's secrets UI
 - The first launch may take time to build the index
 
 

@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import List, ClassVar
+from typing import ClassVar
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -12,19 +12,6 @@ class Settings(BaseSettings):
         env_file=str(env_path),
         case_sensitive=False,
         extra="ignore"
-    )
-    
-    # API Settings
-    app_name: str = Field(default="Resume Chatbot API", description="Application name")
-    version: str = Field(default="1.2.0", description="API version")
-    host: str = Field(default="0.0.0.0", description="Host address")
-    port: int = Field(default=8000, description="Port number")
-    debug: bool = Field(default=True, description="Debug mode")
-    
-    # CORS Settings
-    allowed_origins: List[str] = Field(
-        default=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
-        description="Allowed CORS origins"
     )
     
     # Resume Settings
