@@ -151,14 +151,13 @@ def main():
         
         st.markdown("---")
         st.markdown("### Index")
-        st.caption(f"Path: `{settings.vectorstore_path}`")
         index_exists = os.path.exists(settings.vectorstore_path)
         if index_exists:
             st.success("📦 FAISS index found")
         else:
             st.warning("📦 FAISS index not built yet")
         
-        if st.button("♻️ Rebuild Index", help="Delete and rebuild the FAISS index from the current resume"):
+        if st.button("♻️ Rebuild", help="Delete and rebuild the FAISS index from the current resume"):
             with st.spinner("Rebuilding index..."):
                 try:
                     asyncio.run(rag_service.rebuild(True))
