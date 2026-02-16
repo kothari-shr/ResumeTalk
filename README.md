@@ -87,6 +87,9 @@ USE_LOCAL_EMBEDDINGS=false          # Set true only if configured
 MAX_CONTEXT_CHARS=18000
 MAX_CONTEXT_DOCS=100
 
+# Vectorstore safety
+ALLOW_DANGEROUS_DESERIALIZATION=false
+
 SESSION_TIMEOUT_MINUTES=30  # Auto-cleanup inactive sessions after 30 minutes
 
 CLEANUP_INTERVAL_SECONDS=180  # Run cleanup every 180 seconds

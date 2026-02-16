@@ -5,10 +5,14 @@ Deploy this on Streamlit Cloud or Hugging Face Spaces
 
 import streamlit as st
 import os
-from pathlib import Path
-from typing import List
 import asyncio
 import uuid
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
 
 # Set page config
 st.set_page_config(
@@ -21,7 +25,10 @@ st.set_page_config(
 # Import services
 from app.services.rag_service import rag_service
 from app.services.memory_service import chat_memory
+from app.services.response_service import response_service
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 # Custom CSS
 st.markdown("""
@@ -70,7 +77,8 @@ async def initialize_rag():
                 st.session_state.initialized = True
                 return True
             except Exception as e:
-                st.error(f"❌ Failed to initialize: {str(e)}")
+                logger.exception("Failed to initialize RAG")
+                st.error("❌ Failed to initialize. Check server logs for details.")
                 return False
     return True
 
@@ -82,17 +90,26 @@ async def get_response(question: str):
         
         # Query RAG
         print(f"🧠 Querying RAG with question: {question}")
+        logger.info("Querying RAG")
         result = await rag_service.query(question, chat_history)
         
         answer = result.get("answer", "I'm not sure about that.").strip()
         sources = result.get("source_documents", [])
+
+        if response_service.is_unknown_answer(answer):
+            answer = await response_service.handle_unknown_answer(
+                question=question,
+                session_id=st.session_state.session_id,
+            )
+            sources = []
         
         # Store in memory
         chat_memory.add_exchange(st.session_state.session_id, question, answer)
         
         return answer, sources
     except Exception as e:
-        st.error(f"Error: {str(e)}")
+        logger.exception("Failed to get response")
+        st.error(f"Error while generating a response. {str(e)}")
         return None, []
 
 def display_sources(sources):

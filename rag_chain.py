@@ -1,5 +1,6 @@
 import os
 from typing import Optional
+import logging
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -14,20 +15,18 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 def _get_embeddings():
-    use_local = os.getenv("USE_LOCAL_EMBEDDINGS", "false").lower() == "true"
-    if use_local:
+    if settings.use_local_embeddings:
         return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    else:
-        model = os.getenv("EMBEDDINGS_MODEL", "text-embedding-3-small")
-        return OpenAIEmbeddings(model=model)
+    return OpenAIEmbeddings(model=settings.embeddings_model)
 
 
 def _get_llm() -> ChatOpenAI:
-    model = os.getenv("LLM_MODEL", "gpt-4o-mini")
-    temperature = float(os.getenv("LLM_TEMPERATURE", "0.2"))
-    return ChatOpenAI(model=model, temperature=temperature)
+    return ChatOpenAI(model=settings.llm_model, temperature=settings.llm_temperature)
 
 
 def build_or_load_vectorstore(docs, embeddings, index_path: Optional[str]) -> FAISS:
@@ -35,7 +34,9 @@ def build_or_load_vectorstore(docs, embeddings, index_path: Optional[str]) -> FA
     Build FAISS from docs or load from disk if present. Saves reprocessing of document everytime
     """
     if index_path and os.path.isdir(index_path):
-        return FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True)
+        if settings.allow_dangerous_deserialization:
+            return FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True)
+        logger.warning("Vectorstore exists but deserialization is disabled; rebuilding index.")
 
     vs = FAISS.from_documents(docs, embeddings)
     if index_path:
@@ -120,8 +121,8 @@ def _get_docs_from_vectorstore(vectorstore, filters: dict | None = None):
 
 def _limit_docs_for_context(docs):
     """Limit docs by max count and max total characters to avoid prompt overflow."""
-    max_docs = int(os.getenv("MAX_CONTEXT_DOCS", "0"))
-    max_chars = int(os.getenv("MAX_CONTEXT_CHARS", "0"))
+    max_docs = settings.max_context_docs
+    max_chars = settings.max_context_chars
 
     if max_docs <= 0 and max_chars <= 0:
         return docs
@@ -208,7 +209,7 @@ def bootstrap_rag(docs):
     Compose embeddings, vector store, and chain.
     """
     embeddings = _get_embeddings()
-    index_path = os.getenv("VECTORSTORE_PATH", ".faiss_index") or None
+    index_path = settings.vectorstore_path or None
     vs = build_or_load_vectorstore(docs, embeddings, index_path)
     chain = build_conv_rag_chain(vs)
     return chain

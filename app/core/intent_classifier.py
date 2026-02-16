@@ -12,7 +12,7 @@ _SECTION_KEYWORDS = {
 }
 
 _SECTION_PATTERNS = {
-    section: re.compile(r"\\b(?:" + "|".join(map(re.escape, kws)) + r")\\b", re.IGNORECASE)
+    section: re.compile(r"\b(?:" + "|".join(map(re.escape, kws)) + r")\b", re.IGNORECASE)
     for section, kws in _SECTION_KEYWORDS.items()
 }
 

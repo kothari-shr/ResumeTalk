@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     # Context Safety Settings
     max_context_chars: int = Field(default=18000, ge=1, description="Max context characters")
     max_context_docs: int = Field(default=100, ge=1, description="Max context documents")
+    allow_dangerous_deserialization: bool = Field(
+        default=False,
+        description="Allow loading vectorstores that use pickle-based deserialization",
+    )
     
     # Memory Settings
     max_history_per_session: int = Field(default=50, ge=1, description="Max chat history per session")

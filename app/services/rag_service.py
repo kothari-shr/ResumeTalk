@@ -4,10 +4,13 @@ import hashlib
 import shutil
 from pathlib import Path
 from typing import Dict, List, Any
+import logging
 from app.core.config import settings
 from resume_loader import load_and_split_resume
 from rag_chain import bootstrap_rag
 from app.core.intent_classifier import classify_intent
+
+logger = logging.getLogger(__name__)
 
 class RAGService:
     def __init__(self):
@@ -73,6 +76,7 @@ class RAGService:
             meta = self._read_meta()
             if meta.get("resume_sha256") and meta.get("resume_sha256") != current_hash:
                 print("♻️ Resume changed detected. Rebuilding vectorstore...")
+                logger.info("Resume change detected. Rebuilding vectorstore.")
                 self.delete_vectorstore()
             
             docs = load_and_split_resume(settings.resume_path)
@@ -83,6 +87,7 @@ class RAGService:
             self.chain = bootstrap_rag(docs)
             self._initialized = True
             print(f"✅ RAG chain initialized with {len(docs)} documents")
+            logger.info("RAG chain initialized with %s documents", len(docs))
             # Persist meta for change detection next time
             self._write_meta({
                 "resume_sha256": current_hash,
@@ -91,6 +96,7 @@ class RAGService:
             
         except Exception as e:
             print(f"❌ Failed to initialize RAG chain: {e}")
+            logger.exception("Failed to initialize RAG chain")
             raise
     
     def is_ready(self) -> bool:
@@ -111,6 +117,11 @@ class RAGService:
         intent = classify_intent(question)
         filters = intent.get("normalized_filters", {}) if intent else {}
         print(f"🧠 Classified intent: {intent.get('target_section', 'general')}, filters: {filters}")
+        logger.info(
+            "Classified intent: %s, filters: %s",
+            intent.get("target_sections", []) if intent else [],
+            filters,
+        )
         try:
             # Use invoke() method with latest LangChain.
             # Our chain currently reads the user text from "question", but
@@ -124,7 +135,7 @@ class RAGService:
             })
             return result
         except Exception as e:
-            print(f"RAG chain error: {e}. \nTrying without filters and with invoke.")
+            logger.warning("RAG chain async error; trying sync invoke", exc_info=e)
             # Fallback to sync invoke if async not available
             try:
                 result = self.chain.invoke({
@@ -135,7 +146,7 @@ class RAGService:
                 })
                 return result
             except Exception as sync_e:
-                print(f"Sync invoke also failed: {sync_e}")
+                logger.exception("Sync invoke also failed")
                 raise e
 
     async def rebuild(self, force_delete: bool = True) -> None:
