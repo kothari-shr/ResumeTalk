@@ -59,8 +59,6 @@ if "messages" not in st.session_state:
 if "session_id" not in st.session_state:
     # Generate unique session ID for this user/browser tab
     st.session_state.session_id = f"session_{uuid.uuid4().hex[:12]}"
-if "initialized" not in st.session_state:
-    st.session_state.initialized = False
 
 # Register session activity (heartbeat) - this keeps the session alive
 # This runs on every page interaction/rerun
@@ -68,19 +66,23 @@ if "session_id" in st.session_state:
     # Touch the session to update its last activity time
     _ = chat_memory.get_history(st.session_state.session_id)
 
-async def initialize_rag():
-    """Initialize RAG service"""
-    if not st.session_state.initialized:
-        with st.spinner("🔄 Loading resume and initializing AI..."):
-            try:
-                await rag_service.initialize()
-                st.session_state.initialized = True
-                return True
-            except Exception as e:
-                logger.exception("Failed to initialize RAG")
-                st.error("❌ Failed to initialize. Check server logs for details.")
-                return False
-    return True
+@st.cache_resource(show_spinner=False)
+def get_initialized_rag_service():
+    """Cache the initialized RAG service to avoid re-init on reruns."""
+    asyncio.run(rag_service.initialize())
+    return rag_service
+
+
+def initialize_rag_cached() -> bool:
+    """Initialize RAG service with caching and a user-facing spinner."""
+    with st.spinner("🔄 Loading resume and initializing AI..."):
+        try:
+            _ = get_initialized_rag_service()
+            return True
+        except Exception:
+            logger.exception("Failed to initialize RAG")
+            st.error("❌ Failed to initialize. Check server logs for details.")
+            return False
 
 async def get_response(question: str):
     """Get response from RAG service"""
@@ -178,6 +180,7 @@ def main():
             with st.spinner("Rebuilding index..."):
                 try:
                     asyncio.run(rag_service.rebuild(True))
+                    get_initialized_rag_service.clear()
                     # Reset chat state so new answers use rebuilt index
                     st.session_state.messages = []
                     chat_memory.clear_session(st.session_state.session_id)
@@ -187,7 +190,7 @@ def main():
                     st.error(f"❌ Rebuild failed: {e}")
     
     # Initialize RAG
-    if asyncio.run(initialize_rag()):
+    if initialize_rag_cached():
         # Display chat messages
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
