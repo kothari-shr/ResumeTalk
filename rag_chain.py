@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Tuple
+from typing import Optional
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -44,24 +44,30 @@ def build_or_load_vectorstore(docs, embeddings, index_path: Optional[str]) -> FA
     return vs
 
 
-def get_retriever(vs: FAISS):
-    """
-    Use MMR to diversify retrieved chunks.
-    """
-    k = int(os.getenv("RETRIEVER_K", "4"))
-    fetch_k = int(os.getenv("RETRIEVER_FETCH_K", "12"))
-    lambda_mult = float(os.getenv("MMR_LAMBDA", "0.6"))
-    return vs.as_retriever(
-        search_type="mmr",
-        search_kwargs={"k": k, "fetch_k": fetch_k, "lambda_mult": lambda_mult}
-    )
-
-
 def format_docs(docs):
     """Format retrieved documents into a single string."""
     parts = [doc.page_content.strip() for doc in docs]
     # separate chunks clearly so the model understands chunk boundaries
     return "\n\n---\n\n".join(parts)
+
+
+def _doc_matches_filters(doc, filters: dict) -> bool:
+    meta = getattr(doc, "metadata", {}) or {}
+    for k, v in filters.items():
+        if k not in meta:
+            return False
+        mv = str(meta.get(k, "")).lower()
+        if isinstance(v, (list, tuple, set)):
+            values = [str(item).lower() for item in v]
+            if not any(val in mv for val in values):
+                return False
+        elif isinstance(v, str):
+            if v.lower() not in mv:
+                return False
+        else:
+            if str(v).lower() != mv:
+                return False
+    return True
 
 
 def _filter_documents_by_metadata(docs, filters: dict):
@@ -73,29 +79,71 @@ def _filter_documents_by_metadata(docs, filters: dict):
     if not filters:
         return docs
 
-    def matches(d):
-        meta = getattr(d, "metadata", {}) or {}
-        for k, v in filters.items():
-            # allow simple equality or substring match for convenience
-            if k not in meta:
-                return False
-            mv = str(meta.get(k, "")).lower()
-            if isinstance(v, str):
-                if v.lower() not in mv:
-                    return False
-            else:
-                if str(v).lower() != mv:
-                    return False
-        return True
-
-    filtered = [d for d in docs if matches(d)]
+    filtered = [d for d in docs if _doc_matches_filters(d, filters)]
     if not filtered:
         # fallback to original if overly restrictive
         return docs
     return filtered
 
 
-def build_conv_rag_chain(retriever):
+def _get_docs_from_vectorstore(vectorstore, filters: dict | None = None):
+    """Return all docs from the vectorstore that match filters.
+
+    If filters are omitted or empty, returns all docs in the store.
+    """
+    if not vectorstore:
+        return []
+
+    docstore = getattr(vectorstore, "docstore", None)
+    store_dict = getattr(docstore, "_dict", None)
+    if not store_dict:
+        return []
+
+    docs = list(store_dict.values())
+    if filters:
+        filtered = [d for d in docs if d and _doc_matches_filters(d, filters)]
+        if not filtered:
+            return []
+    else:
+        filtered = [d for d in docs if d]
+
+    def sort_key(doc):
+        meta = getattr(doc, "metadata", {}) or {}
+        return (
+            meta.get("section", ""),
+            int(meta.get("bullet_index", 0) or 0),
+            int(meta.get("subchunk_index", 0) or 0),
+        )
+
+    return sorted(filtered, key=sort_key)
+
+
+def _limit_docs_for_context(docs):
+    """Limit docs by max count and max total characters to avoid prompt overflow."""
+    max_docs = int(os.getenv("MAX_CONTEXT_DOCS", "0"))
+    max_chars = int(os.getenv("MAX_CONTEXT_CHARS", "0"))
+
+    if max_docs <= 0 and max_chars <= 0:
+        return docs
+
+    limited = []
+    total_chars = 0
+    for doc in docs:
+        content = (doc.page_content or "").strip()
+        content_len = len(content)
+
+        if max_docs > 0 and len(limited) >= max_docs:
+            break
+        if max_chars > 0 and total_chars + content_len > max_chars:
+            break
+
+        limited.append(doc)
+        total_chars += content_len
+
+    return limited
+
+
+def build_conv_rag_chain(vectorstore):
     """
     Build a Conversational RAG chain using pure LCEL (LangChain Expression Language).
     This works with LangChain 1.0+
@@ -139,9 +187,8 @@ Context from resume:
         )
         | RunnablePassthrough.assign(
             context=lambda x: format_docs(
-                _filter_documents_by_metadata(
-                    retriever.invoke(x["standalone_question"]),
-                    x.get("filters", {}) or {}
+                _limit_docs_for_context(
+                    _get_docs_from_vectorstore(vectorstore, x.get("filters", {}) or None)
                 )
             )
         )
@@ -156,13 +203,12 @@ Context from resume:
     return chain
 
 
-def bootstrap_rag(docs) -> Tuple:
+def bootstrap_rag(docs):
     """
-    Compose embeddings, vector store, retriever, and chain.
+    Compose embeddings, vector store, and chain.
     """
     embeddings = _get_embeddings()
     index_path = os.getenv("VECTORSTORE_PATH", ".faiss_index") or None
     vs = build_or_load_vectorstore(docs, embeddings, index_path)
-    retriever = get_retriever(vs)
-    chain = build_conv_rag_chain(retriever)
+    chain = build_conv_rag_chain(vs)
     return chain

@@ -5,47 +5,44 @@ from langchain_community.document_loaders import PyMuPDFLoader
 
 
 _SECTION_KEYWORDS = {
-    "projects": [r"project", r"projects", "personal projects", "academic projects"],
-    "experience": [r"experience", r"work", r"professional", r"roles"],
-    "education": [r"education", r"degree", r"university", r"school", r"bachelor", r"master", r"phd"],
-    "skills": [r"skill", r"skills", r"competence", r"technology", r"stack"],
+    "projects": ["project", "projects", "personal projects", "academic projects"],
+    "experience": ["experience", "work", "professional", "roles"],
+    "education": ["education", "degree", "university", "school", "bachelor", "master", "phd"],
+    "skills": ["skill", "skills", "competence", "technology", "stack"],
+}
+
+_SECTION_PATTERNS = {
+    section: re.compile(r"\\b(?:" + "|".join(map(re.escape, kws)) + r")\\b", re.IGNORECASE)
+    for section, kws in _SECTION_KEYWORDS.items()
 }
 
 
-def _match_section_by_keywords(query: str) -> str:
-    q = query.lower()
-    # explicit multi-word rules first
-    if "personal projects" in q or "academic projects" in q:
-        return "projects"
-
-    for section, kws in _SECTION_KEYWORDS.items():
-        for kw in kws:
-            if re.search(r"\b" + kw + r"\b", q):
-                return section
-    return "general"
+def _match_sections_by_keywords(query: str) -> list[str]:
+    matched = [section for section, pat in _SECTION_PATTERNS.items() if pat.search(query)]
+    return sorted(set(matched))
 
 
 def classify_intent(query: str) -> Dict[str, Any]:
-    """Classify a user query into a target section and return retriever filters.
+    """Classify a user query into target sections and return context filters.
 
     Returns a dict with:
-      - target_section: one of {projects, experience, education, skills, general}
-      - normalized_filters: dict suitable to pass to the retriever (e.g. {'section': 'projects'})
+    - target_sections: list of sections (e.g. ['projects', 'experience'])
+    - normalized_filters: dict suitable to filter context (e.g. {'section': ['projects']})
 
     This implementation uses keyword matching and normalizes common variants
     (e.g., 'project', 'projects' -> 'projects'). It intentionally avoids few-shot
     hard-coded examples and does not add exclusion filters.
     """
     if not query or not query.strip():
-        return {"target_section": "general", "normalized_filters": {}}
+        return {"target_sections": [], "normalized_filters": {}}
 
-    target = _match_section_by_keywords(query)
+    targets = _match_sections_by_keywords(query)
 
     filters: Dict[str, Any] = {}
-    if target and target != "general":
-        filters["section"] = target
+    if targets:
+        filters["section"] = targets
 
-    return {"target_section": target, "normalized_filters": filters}
+    return {"target_sections": targets, "normalized_filters": filters}
 
 
 def detect_bullet_styles_from_text(text: str) -> Dict[str, int]:

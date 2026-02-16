@@ -39,7 +39,7 @@ Tip: If `streamlit` command isn't found, always use `python -m streamlit ...`.
 
 - `app/services/rag_service.py` – Loads resume, builds vector store, exposes `query()` and `rebuild()`
 - `resume_loader.py` – Loads and splits the resume PDF into chunks
-- `rag_chain.py` – Builds the LangChain RAG pipeline (LLM + retriever + prompts)
+- `rag_chain.py` – Builds the LangChain RAG pipeline (LLM + prompts)
 - `app/services/memory_service.py` – In-memory per-session chat history
 - `streamlit_app.py` – Streamlit interface (chat UI + Rebuild Index)
 
@@ -83,17 +83,16 @@ LLM_MODEL=gpt-4o-mini
 LLM_TEMPERATURE=0.2
 USE_LOCAL_EMBEDDINGS=false          # Set true only if configured
 
-# Retrieval tuning
-RETRIEVER_K=4
-RETRIEVER_FETCH_K=12
-MMR_LAMBDA=0.7
+# Context safety (optional)
+MAX_CONTEXT_CHARS=18000
+MAX_CONTEXT_DOCS=100
 
 SESSION_TIMEOUT_MINUTES=30  # Auto-cleanup inactive sessions after 30 minutes
 
 CLEANUP_INTERVAL_SECONDS=180  # Run cleanup every 180 seconds
 ```
 
-Additional configurable settings live in `app/core/config.py` (with safe defaults): memory limits, retrieval tuning, etc.
+Additional configurable settings live in `app/core/config.py` (with safe defaults): memory limits, context safety, etc.
 
 Security note: rotate any leaked keys and keep `.env` in `.gitignore`.
 

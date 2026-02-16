@@ -24,10 +24,9 @@ class Settings(BaseSettings):
     embeddings_model: str = Field(default="text-embedding-3-small", description="Embeddings model")
     use_local_embeddings: bool = Field(default=False, description="Use local HuggingFace embeddings")
     
-    # Retrieval Settings
-    retriever_k: int = Field(default=4, ge=1, le=20, description="Number of documents to retrieve")
-    retriever_fetch_k: int = Field(default=12, ge=1, le=50, description="Number of docs for MMR")
-    mmr_lambda: float = Field(default=0.7, ge=0.0, le=1.0, description="MMR lambda parameter")
+    # Context Safety Settings
+    max_context_chars: int = Field(default=18000, ge=1, description="Max context characters")
+    max_context_docs: int = Field(default=100, ge=1, description="Max context documents")
     
     # Memory Settings
     max_history_per_session: int = Field(default=50, ge=1, description="Max chat history per session")
