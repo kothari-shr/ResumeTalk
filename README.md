@@ -1,5 +1,7 @@
 # Resume Chatbot (LangChain + Streamlit)
 
+Live app🔗: https://resumetalk-spkothari0.streamlit.app/
+
 Conversational Q&A over a resume using Retrieval-Augmented Generation (RAG).
 This repo provides:
 
