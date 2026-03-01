@@ -4,18 +4,20 @@ Live app🔗: https://resumetalk-spkothari0.streamlit.app/
 
 ## 🚀 Recruiter Snapshot (Tech + Skills)
 
-| Technology | Where it is used in this project | What it demonstrates |
-|---|---|---|
-| **Python** | End-to-end backend + app logic | Production-grade backend engineering and clean modular code organization |
-| **FastAPI** | REST APIs for chat, sessions, and health checks | API design, async web services, and scalable service architecture |
-| **LangChain** | RAG orchestration (prompting, retriever + LLM chaining) | Applied GenAI engineering and LLM workflow composition |
-| **FAISS** | Vector index for resume chunks | Information retrieval, semantic search, and low-latency query pipelines |
-| **OpenAI Models** | Answer generation + embeddings | Practical LLM integration and prompt/result quality tuning |
-| **Streamlit** | Interactive chat frontend with index controls | Rapid product prototyping and full-stack ownership |
-| **Pydantic Settings/Models** | Config + request/response validation | Strong typing, validation, and maintainable API contracts |
-| **Session Memory Layer** | Per-session conversation context | Stateful conversational systems and user-session design |
-| **Env-based Configuration** | `.env` driven runtime behavior | Secure configuration management and deployment readiness |
+## ⚡ Tech Stack at a Glance (for Recruiters)
 
+| Technology | Where it is used | Why it matters (skills shown) |
+| --- | --- | --- |
+| **Python** | Core backend + orchestration logic | Clean modular backend development, API design, and production-oriented coding practices |
+| **FastAPI** | REST APIs (`/chat`, `/sessions`, `/health`) | Modern async API development, request/response modeling, service architecture |
+| **Pydantic** | Config + API schemas | Type-safe validation, robust data contracts, maintainable backend code |
+| **LangChain** | RAG pipeline and prompt chaining | Applied LLM engineering, retrieval strategy design, conversational AI workflow building |
+| **FAISS** | Vector index for resume embeddings | Semantic search implementation and efficient similarity retrieval at scale |
+| **OpenAI Models/Embeddings** | LLM response generation + embedding creation | Practical GenAI integration and prompt-driven feature development |
+| **Streamlit** | Chat UI for recruiters/users | Rapid product prototyping, interactive frontend for AI applications |
+| **Session Memory Layer** | Per-session conversation context | Stateful chatbot design and context-aware response handling |
+
+**In short:** this project demonstrates full-stack AI engineering skills — from backend APIs and data validation to RAG architecture, vector search, LLM integration, and user-facing delivery.
 
 Conversational Q&A over a resume using Retrieval-Augmented Generation (RAG).
 This repo provides:
