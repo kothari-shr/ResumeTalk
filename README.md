@@ -2,6 +2,21 @@
 
 Live app🔗: https://resumetalk-spkothari0.streamlit.app/
 
+## 🚀 Recruiter Snapshot (Tech + Skills)
+
+| Technology | Where it is used in this project | What it demonstrates |
+|---|---|---|
+| **Python** | End-to-end backend + app logic | Production-grade backend engineering and clean modular code organization |
+| **FastAPI** | REST APIs for chat, sessions, and health checks | API design, async web services, and scalable service architecture |
+| **LangChain** | RAG orchestration (prompting, retriever + LLM chaining) | Applied GenAI engineering and LLM workflow composition |
+| **FAISS** | Vector index for resume chunks | Information retrieval, semantic search, and low-latency query pipelines |
+| **OpenAI Models** | Answer generation + embeddings | Practical LLM integration and prompt/result quality tuning |
+| **Streamlit** | Interactive chat frontend with index controls | Rapid product prototyping and full-stack ownership |
+| **Pydantic Settings/Models** | Config + request/response validation | Strong typing, validation, and maintainable API contracts |
+| **Session Memory Layer** | Per-session conversation context | Stateful conversational systems and user-session design |
+| **Env-based Configuration** | `.env` driven runtime behavior | Secure configuration management and deployment readiness |
+
+
 Conversational Q&A over a resume using Retrieval-Augmented Generation (RAG).
 This repo provides:
 
