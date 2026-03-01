@@ -17,7 +17,7 @@ Live app🔗: https://resumetalk-spkothari0.streamlit.app/
 | **Streamlit** | Chat UI for recruiters/users | Rapid product prototyping, interactive frontend for AI applications |
 | **Session Memory Layer** | Per-session conversation context | Stateful chatbot design and context-aware response handling |
 
-**In short:** this project demonstrates full-stack AI engineering skills — from backend APIs and data validation to RAG architecture, vector search, LLM integration, and user-facing delivery.
+> **In short:** this project demonstrates full-stack AI engineering skills — from backend APIs and data validation to RAG architecture, vector search, LLM integration, and user-facing delivery.
 
 Conversational Q&A over a resume using Retrieval-Augmented Generation (RAG).
 This repo provides:
