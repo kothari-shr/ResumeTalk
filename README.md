@@ -4,8 +4,6 @@ Live app🔗: https://resumetalk-spkothari0.streamlit.app/
 
 ## 🚀 Recruiter Snapshot (Tech + Skills)
 
-## ⚡ Tech Stack at a Glance (for Recruiters)
-
 | Technology | Where it is used | Why it matters (skills shown) |
 | --- | --- | --- |
 | **Python** | Core backend + orchestration logic | Clean modular backend development, API design, and production-oriented coding practices |
